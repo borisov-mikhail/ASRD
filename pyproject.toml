@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "diploma"
+name = "ASRD"
 version = "0.1.0"
 description = ""
 authors = ["Mikhail Borisov <travka_mx@mail.ru>"]
