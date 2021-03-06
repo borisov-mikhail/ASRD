@@ -3,7 +3,7 @@ import os  # Отсюда нам понадобятся методы для от
 from PyQt5.QtGui import QPixmap
 from PyQt5 import QtWidgets
 from data_preparation import *
-from form import * # Это наш конвертированный файл дизайна
+from form import *  # Это наш конвертированный файл дизайна
 
 
 class MyApp(QtWidgets.QMainWindow):

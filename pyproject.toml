@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "diploma"
+version = "0.1.0"
+description = ""
+authors = ["Mikhail Borisov <travka_mx@mail.ru>"]
+license = "Unlicensed"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^1.2.3"
+numpy = "^1.20.1"
+seaborn = "^0.11.1"
+matplotlib = "^3.3.4"
+PyQt5 = "^5.15.3"
+fsspec = "^0.8.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
