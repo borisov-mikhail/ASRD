@@ -63,7 +63,9 @@ class Ui_MainWindow(object):
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        spacerItem = QtWidgets.QSpacerItem(36, 22, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(36, 22,
+                                           QtWidgets.QSizePolicy.Minimum,
+                                           QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_3.addItem(spacerItem)
         self.pushButton = QtWidgets.QPushButton(self.layoutWidget)
         self.pushButton.setEnabled(True)
@@ -76,13 +78,13 @@ class Ui_MainWindow(object):
         self.pushButton.setFont(font)
         self.pushButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton.setStyleSheet("QPushButton{\n"
-"background-color: rgb(222, 165, 255);\n"
-"color: rgb(0, 0, 0);\n"
-"}\n"
-"QPushButton:pressed{\n"
-"background-color: rgb(152, 142, 255);\n"
-"color: rgb(255, 255, 255);\n"
-"}")
+                                      "background-color: rgb(222, 165, 255);\n"
+                                      "color: rgb(0, 0, 0);\n"
+                                      "}\n"
+                                      "QPushButton:pressed{\n"
+                                      "background-color: rgb(152, 142, 255);\n"
+                                      "color: rgb(255, 255, 255);\n"
+                                      "}")
         self.pushButton.setObjectName("pushButton")
         self.verticalLayout_3.addWidget(self.pushButton)
         self.pushButton_2 = QtWidgets.QPushButton(self.layoutWidget)
@@ -91,7 +93,9 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_2.setFont(font)
-        self.pushButton_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.pushButton_2.setCursor(
+            QtGui.QCursor(QtCore.Qt.PointingHandCursor)
+        )
         self.pushButton_2.setObjectName("pushButton_2")
         self.verticalLayout_3.addWidget(self.pushButton_2)
         self.gridLayout.addLayout(self.verticalLayout_3, 0, 1, 1, 1)
@@ -109,6 +113,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "    Выберите путь до файла с измерениями    "))
+        self.label.setText(_translate(
+            "MainWindow",
+            "    Выберите путь до файла с измерениями    "
+        ))
         self.pushButton.setText(_translate("MainWindow", "Обзор"))
         self.pushButton_2.setText(_translate("MainWindow", "Построить"))

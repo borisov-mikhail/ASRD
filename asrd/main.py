@@ -1,7 +1,10 @@
-import sys  # sys нужен для передачи argv в QApplication
+import sys
+
+from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
-from data_preparation import *
-from asrd.qt_design.form import *  # Это наш конвертированный файл дизайна
+
+from asrd.qt_design.form import Ui_MainWindow  # Converted file with design
+from data_preparation import read_data, plot_graph
 
 
 class MyApp(QtWidgets.QMainWindow):
@@ -18,7 +21,11 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.comboBox.addItems(read_data(self.ui.lineEdit.text()))
 
     def plot(self):
-        pixmap = QPixmap(plot_graph(self.ui.comboBox.currentIndex(), x='P/P0_1', y='V'))
+        pixmap = QPixmap(plot_graph(
+            self.ui.comboBox.currentIndex(),
+            x='P/P0_1',
+            y='V'
+        ))
         self.ui.label_2.setPixmap(pixmap)
 
 
