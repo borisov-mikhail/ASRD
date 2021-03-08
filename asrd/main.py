@@ -4,12 +4,13 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 
 from asrd.qt_design.form import Ui_MainWindow  # Converted file with design
-from data_preparation import read_data, plot_graph
+from asrd.data_preparation import Analyzer
 
 
 class MyApp(QtWidgets.QMainWindow):
     def __init__(self):
         super(MyApp, self).__init__()
+        self.analyzer = Analyzer()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.path)
@@ -18,14 +19,13 @@ class MyApp(QtWidgets.QMainWindow):
     def path(self):
         path = QtWidgets.QFileDialog.getOpenFileName()[0]
         self.ui.lineEdit.setText(path)
-        self.ui.comboBox.addItems(read_data(self.ui.lineEdit.text()))
+        self.analyzer.parse(path)
+        self.ui.comboBox.addItems(self.analyzer.get_samples_names())
 
     def plot(self):
-        pixmap = QPixmap(plot_graph(
-            self.ui.comboBox.currentIndex(),
-            x='P/P0_1',
-            y='V'
-        ))
+        self.analyzer.models_calculation()
+        sample_index = self.ui.comboBox.currentIndex()
+        pixmap = QPixmap(self.analyzer.plot_graph(sample_index))
         self.ui.label_2.setPixmap(pixmap)
 
 
