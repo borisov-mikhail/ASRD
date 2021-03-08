@@ -4,12 +4,12 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 
 from asrd.qt_design.form import Ui_MainWindow  # Converted file with design
-from asrd.data_preparation import Analyzer
+from asrd.analyzer import Analyzer
 
 
-class MyApp(QtWidgets.QMainWindow):
+class QtASRD(QtWidgets.QMainWindow):
     def __init__(self):
-        super(MyApp, self).__init__()
+        super(QtASRD, self).__init__()
         self.analyzer = Analyzer()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -29,8 +29,10 @@ class MyApp(QtWidgets.QMainWindow):
         self.ui.label_2.setPixmap(pixmap)
 
 
-app = QtWidgets.QApplication([])
-application = MyApp()
-application.show()
+if __name__ == '__main__':
+    app = QtWidgets.QApplication([])
 
-sys.exit(app.exec())
+    application = QtASRD()
+    application.show()
+
+    sys.exit(app.exec())
