@@ -5,6 +5,28 @@
     <title>ASRD</title>
 </head>
 <body>
-    <img src="/plot/{{graph}}.jpg">
+    <h2>Select file to upload</h2>
+<p>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+		<ul class=flashes>
+		{% for message in messages %}
+		  <li>{{ message }}</li>
+		{% endfor %}
+		</ul>
+	  {% endif %}
+	{% endwith %}
+</p>
+<form method="post" action="/" enctype="multipart/form-data">
+    <dl>
+		<p>
+			<input type="file" name="file" autocomplete="off" required>
+			<input type="submit" value="Submit">
+		</p>
+    </dl>
+</form>
+	{% if graph %}
+    	<img src="/plot/{{graph}}.jpg">
+	{% endif %}
 </body>
 </html>
