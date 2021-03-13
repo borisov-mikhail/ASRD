@@ -26,6 +26,12 @@
     </dl>
 </form>
 	{% if graph %}
+		<select name="samples_names" method="GET" action="/">
+			<option value="{{samples_names[0]}}" selected>{{samples_names[0]}}</option>
+		  	{% for name in samples_names[1:] %}
+				<option value="{{name}}">{{name}}</option>
+		  	{% endfor %}
+		</select>
     	<img src="/plot/{{graph}}.jpg">
 	{% endif %}
 </body>

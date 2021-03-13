@@ -2,8 +2,10 @@ import os
 from flask import Flask, render_template, send_from_directory, request, flash,\
     redirect, url_for
 from werkzeug.utils import secure_filename
+from asrd.analyzer import Analyzer
 
 app = Flask(__name__)
+analyzer = Analyzer()
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 ALLOWED_EXTENSIONS = {'srb'}
@@ -45,9 +47,13 @@ def upload_file():
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash('File successfully uploaded')
-            return render_template('index.html', graph='test')
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            analyzer.parse(filepath)
+            samples_names = analyzer.get_samples_names()
+            file.save(os.path.join(filepath))
+            return render_template('index.html',
+                                   graph='test',
+                                   samples_names=samples_names)
         else:
             flash('Allowed file types are srb')
             return redirect(request.url)
