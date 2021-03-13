@@ -1,38 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
+
     <title>ASRD</title>
-</head>
-<body>
-    <h2>Select file to upload</h2>
-<p>
-	{% with messages = get_flashed_messages() %}
-	  {% if messages %}
-		<ul class=flashes>
-		{% for message in messages %}
-		  <li>{{ message }}</li>
-		{% endfor %}
-		</ul>
-	  {% endif %}
-	{% endwith %}
-</p>
-<form method="post" action="/" enctype="multipart/form-data">
-    <dl>
-		<p>
-			<input type="file" name="file" autocomplete="off" required>
-			<input type="submit" value="Submit">
-		</p>
-    </dl>
-</form>
-	{% if graph %}
-		<select name="samples_names" method="GET" action="/">
-			<option value="{{samples_names[0]}}" selected>{{samples_names[0]}}</option>
-		  	{% for name in samples_names[1:] %}
-				<option value="{{name}}">{{name}}</option>
-		  	{% endfor %}
-		</select>
-    	<img src="/plot/{{graph}}.jpg">
-	{% endif %}
-</body>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+      integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w=="
+      crossorigin="anonymous"
+    />
+
+    <style>
+      body {
+        padding: 0.5em 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="bla-bla-class">Select file to upload</h1>
+
+    <div>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <form method="post" action="/upload-srb-data/" enctype="multipart/form-data">
+      <input type="file" name="file" autocomplete="off" required>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    {% if samples %}
+      <ul>
+        {% for index, name in samples %}
+          <li>
+            <a href="/view/{{file}}/{{index}}">{{name}}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if graph %}
+      <img src="/plot/{{graph}}.jpg">
+    {% endif %}
+  </body>
 </html>

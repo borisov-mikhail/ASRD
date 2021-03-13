@@ -47,11 +47,13 @@ class Sample:
 
 
 class Analyzer:
-    samples: List[Sample] = []
+    samples: List[Sample]
 
     def parse(self, path):
         with open(path, 'r', encoding='windows-1251') as file:
             content = file.read().strip()
+
+        self.samples = []
 
         for line in content.split('\n'):
             columns = line.split(',')
