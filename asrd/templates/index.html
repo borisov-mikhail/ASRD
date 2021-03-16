@@ -16,6 +16,12 @@
       body {
         padding: 0.5em 1em;
       }
+      #menu { /* Левая колонка */
+        float: left; /* Обтекание справа */
+        width: 200px; /* Ширина колонки */
+        padding: 5px; /* Поля вокруг текста */
+        margin: 10px 10px 20px 10px; /* Значения отступов */
+       }
     </style>
   </head>
   <body>
@@ -40,7 +46,7 @@
     </form>
 
     {% if samples %}
-      <ul>
+      <ul id="menu">
         {% for index, name in samples %}
           <li>
             <a href="/view/{{file}}/{{index}}">{{name}}</a>
@@ -50,7 +56,7 @@
     {% endif %}
 
     {% if graph %}
-      <img src="/plot/{{graph}}.jpg">
+      <img src="/plot/{{graph}}" alt="">
     {% endif %}
   </body>
 </html>

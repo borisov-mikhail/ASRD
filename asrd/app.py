@@ -14,6 +14,7 @@ if not os.path.isdir(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['GRAPH_FOLDER'] = './'
 
 
 @app.route('/')
@@ -21,9 +22,9 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/plot/<name>')
-def send_plot(name):
-    return send_from_directory('../data', name)
+@app.route('/plot/<filename>/<name>')
+def send_plot(filename, name):
+    return send_from_directory('../uploads/' + filename, name)
 
 
 def allowed_file(filename):
@@ -51,6 +52,7 @@ def upload_srb_file():
         file.save(filepath)
 
         filename_without_ext = filename.replace('.srb', '')
+
         return redirect(f'/view/{filename_without_ext}')
     else:
         flash('Allowed file types are srb')
@@ -60,16 +62,18 @@ def upload_srb_file():
 @app.route('/view/<file>/')
 def view(file):
     analyzer = Analyzer()
-    analyzer.parse(os.path.join(app.config['UPLOAD_FOLDER'], f'{file}.srb'))
+    analyzer.parse(app, os.path.join(app.config['UPLOAD_FOLDER'], f'{file}.srb'))
     samples_names = analyzer.get_samples_names()
 
-    return render_template('index.html', file=file, samples=enumerate(samples_names))
+    return render_template('index.html',
+                           file=file,
+                           samples=enumerate(samples_names))
 
 
 @app.route('/view/<file>/<sample_index>/')
 def view_with_graph(file, sample_index):
     analyzer = Analyzer()
-    analyzer.parse(os.path.join(app.config['UPLOAD_FOLDER'], f'{file}.srb'))
+    analyzer.parse(app, os.path.join(app.config['UPLOAD_FOLDER'], f'{file}.srb'))
     samples_names = analyzer.get_samples_names()
-
-    return render_template('index.html', graph='test', samples=enumerate(samples_names))
+    plotpath = analyzer.plot_graph(app, int(sample_index))
+    return render_template('index.html', graph=plotpath, samples=enumerate(samples_names))

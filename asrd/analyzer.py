@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 sns.set_theme(color_codes=True)
 
@@ -49,9 +50,10 @@ class Sample:
 class Analyzer:
     samples: List[Sample]
 
-    def parse(self, path):
+    def parse(self, app, path):
         with open(path, 'r', encoding='windows-1251') as file:
             content = file.read().strip()
+        app.config['GRAPH_FOLDER'] = os.path.splitext(os.path.basename(path))[0]
 
         self.samples = []
 
@@ -109,7 +111,7 @@ class Analyzer:
                          float(sample.mass)
                 point.volume = volume
 
-    def plot_graph(self, index):
+    def plot_graph(self, app, index):
         sample = self.samples[index]
         x = []
         y = []
@@ -145,7 +147,10 @@ class Analyzer:
         plt.yticks(fontsize=13)
         plt.grid(True, which=u'major', color='black', linewidth=1.,
                  linestyle='-')
-        path = "./data/test.jpg"
+        if not os.path.isdir(app.config['GRAPH_FOLDER']):
+            os.mkdir(app.config['GRAPH_FOLDER'])
+        path = os.path.join(app.config['UPLOAD_FOLDER'],
+                            app.config['GRAPH_FOLDER'] + '/' + str(index)
+                            + '.jpg')
         g.savefig(path)
-        return path
-
+        return app.config['GRAPH_FOLDER'] + '/' + str(index) + '.jpg'
