@@ -75,5 +75,6 @@ def view_with_graph(file, sample_index):
     analyzer = Analyzer()
     analyzer.parse(app, os.path.join(app.config['UPLOAD_FOLDER'], f'{file}.srb'))
     samples_names = analyzer.get_samples_names()
+    analyzer.models_calculation(int(sample_index))
     plotpath = analyzer.plot_graph(app, int(sample_index))
     return render_template('index.html', graph=plotpath, samples=enumerate(samples_names))

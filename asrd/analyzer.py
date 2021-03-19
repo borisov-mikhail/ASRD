@@ -7,6 +7,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
+
 sns.set_theme(color_codes=True)
 
 
@@ -104,22 +105,19 @@ class Analyzer:
     def get_samples_names(self):
         return [sample.sample_name for sample in self.samples]
 
-    def models_calculation(self):
-        for sample in self.samples:
-            for point in sample.points:
-                volume = float(point.S_of_pick) * float(point.grad_koeff) / \
-                         float(sample.mass)
-                point.volume = volume
+    def models_calculation(self, sample_index):
+        sample = self.samples[sample_index]
+        for point in sample.points:
+            volume = float(point.S_of_pick) * float(point.grad_koeff) / \
+                     float(sample.mass)
+            point.volume = volume
+            #print(point.S_of_pick)
 
     def plot_graph(self, app, index):
         sample = self.samples[index]
-        x = []
-        y = []
-        hue = []
-        for point in sample.points:
-            x.append(point.p_p1)
-            y.append(point.volume)
-            hue.append(point.adsorb_or_desorb)
+        x = [point.p_p1 for point in sample.points]
+        y = [point.volume for point in sample.points]
+        hue = [point.adsorb_or_desorb for point in sample.points]
         data = {'P/P0_1': x,
                 'V': y,
                 'adsorb_or_desorb': hue}
