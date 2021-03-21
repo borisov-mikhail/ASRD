@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from typing import List
 
@@ -6,6 +7,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+
+import asrd.config as conf
 
 
 sns.set_theme(color_codes=True)
@@ -51,10 +54,9 @@ class Sample:
 class Analyzer:
     samples: List[Sample]
 
-    def parse(self, app, path):
+    def parse(self, path):
         with open(path, 'r', encoding='windows-1251') as file:
             content = file.read().strip()
-        app.config['GRAPH_FOLDER'] = os.path.splitext(os.path.basename(path))[0]
 
         self.samples = []
 
@@ -111,7 +113,6 @@ class Analyzer:
             volume = float(point.S_of_pick) * float(point.grad_koeff) / \
                      float(sample.mass)
             point.volume = volume
-            #print(point.S_of_pick)
 
     def plot_graph(self, app, index):
         sample = self.samples[index]
@@ -122,7 +123,6 @@ class Analyzer:
                 'V': y,
                 'adsorb_or_desorb': hue}
         graph_points = pd.DataFrame(data)
-        print(graph_points)
         sns.set_style("ticks", {'xtick.color': '.0', 'ytick.color': '.0'})
         g = sns.lmplot(
                        x='P/P0_1',
@@ -145,10 +145,8 @@ class Analyzer:
         plt.yticks(fontsize=13)
         plt.grid(True, which=u'major', color='black', linewidth=1.,
                  linestyle='-')
-        if not os.path.isdir(app.config['GRAPH_FOLDER']):
-            os.mkdir(app.config['GRAPH_FOLDER'])
-        path = os.path.join(app.config['UPLOAD_FOLDER'],
-                            app.config['GRAPH_FOLDER'] + '/' + str(index)
-                            + '.jpg')
-        g.savefig(path)
-        return app.config['GRAPH_FOLDER'] + '/' + str(index) + '.jpg'
+
+        filename = str(uuid.uuid4()) + '.jpg'
+        g.savefig(os.path.join(conf.GRAPH_FOLDER, filename))
+
+        return filename

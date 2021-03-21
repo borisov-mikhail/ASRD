@@ -1,6 +1,13 @@
-/examples_data
-/data
-__pycache__
+# IDE's
 .idea
-/notebooks/.ipynb_checkpoints
-/uploads
+
+# Cache
+__pycache__
+.ipynb_checkpoints
+
+# Secrets
+.env
+
+# Generated in runtime
+/data
+/examples_data
