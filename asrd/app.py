@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 from flask import Flask, render_template, send_from_directory, request, flash,\
@@ -52,12 +53,35 @@ def view_with_graph(guid, sample_index):
     analyzer = Analyzer()
     analyzer.parse(os.path.join(conf.UPLOAD_PATH, guid))
     samples_names = analyzer.get_samples_names()
-    analyzer.models_calculation(int(sample_index))
-    plotpath = analyzer.plot_graph(app, int(sample_index))
-
     return render_template('index.html',
-                           graph=plotpath,
+                           file=guid,
+                           graph=True,
+                           sample_index=int(sample_index),
                            samples=enumerate(samples_names))
+
+
+@app.route('/api/points/<guid>/<sample>')
+def api_get_point(guid, sample):
+    analyzer = Analyzer()
+    analyzer.parse(os.path.join(conf.UPLOAD_PATH, guid))
+    analyzer.models_calculation(int(sample))
+    sample = analyzer.samples[int(sample)]
+
+    x = [point.p_p1 for point in sample.points]
+    y = [point.volume for point in sample.points]
+
+    data = [{
+      'x': x,
+      'data': y,
+    }, {
+      'x': x,
+      'data': y,
+    }, {
+      'x': x,
+      'data': y,
+    }]
+
+    return json.dumps(data)
 
 
 @app.route('/plot/<filename>')

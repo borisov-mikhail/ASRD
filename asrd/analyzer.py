@@ -114,11 +114,14 @@ class Analyzer:
                      float(sample.mass)
             point.volume = volume
 
-    def plot_graph(self, app, index):
+    def plot_graph(self, index):
         sample = self.samples[index]
+
         x = [point.p_p1 for point in sample.points]
         y = [point.volume for point in sample.points]
         hue = [point.adsorb_or_desorb for point in sample.points]
+
+
         data = {'P/P0_1': x,
                 'V': y,
                 'adsorb_or_desorb': hue}
