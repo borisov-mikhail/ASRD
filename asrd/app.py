@@ -3,6 +3,7 @@ import os
 import uuid
 from flask import Flask, render_template, send_from_directory, request, flash,\
     redirect
+import numpy as np
 
 import asrd.config as conf
 from asrd.analyzer import Analyzer
@@ -66,20 +67,18 @@ def api_get_point(guid, sample):
     analyzer.parse(os.path.join(conf.UPLOAD_PATH, guid))
     analyzer.models_calculation(int(sample))
     sample = analyzer.samples[int(sample)]
+    # x = list(np.arange(0, 1.1, 0.1))
+    # x = [point.p_p1 for point in sample.points if point.adsorb_or_desorb == 0]
+    y_adsorb = [[point.p_p1, point.volume] for point in sample.points if point.adsorb_or_desorb == 0]
+    y_desorb = [[point.p_p1, point.volume] for point in sample.points if point.adsorb_or_desorb == 1]
 
-    x = [point.p_p1 for point in sample.points]
-    y = [point.volume for point in sample.points]
-
-    data = [{
-      'x': x,
-      'data': y,
-    }, {
-      'x': x,
-      'data': y,
-    }, {
-      'x': x,
-      'data': y,
-    }]
+    data = [[
+        y_adsorb,
+        y_desorb
+        # 'x': x,
+        # 'y_adsorb': y_adsorb,
+        # 'y_desorb': y_desorb
+        ]]
 
     return json.dumps(data)
 

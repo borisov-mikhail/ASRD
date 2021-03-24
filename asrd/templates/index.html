@@ -125,16 +125,18 @@
           const chart = window.echarts.init(container);
 
           chart.setOption({
-            xAxis: {
-              type: 'category',
-              data: data.x,
-            },
-            yAxis: {
-              type: 'value'
-            },
+            xAxis: {},
+            yAxis: {},
             series: [{
-              data: data.data,
-              type: 'line'
+              symbolSize: 10,
+              data: data[0],
+              type: 'scatter'
+
+            },
+            {
+              symbolSize: 10,
+              data: data[1],
+              type: 'scatter'
             }]
           });
         }
