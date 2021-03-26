@@ -107,13 +107,6 @@ class Analyzer:
     def get_samples_names(self):
         return [sample.sample_name for sample in self.samples]
 
-    def models_calculation(self, sample_index):
-        sample = self.samples[sample_index]
-        for point in sample.points:
-            volume = float(point.S_of_pick) * float(point.grad_koeff) / \
-                     float(sample.mass)
-            point.volume = volume
-
     def plot_graph(self, index):
         sample = self.samples[index]
 

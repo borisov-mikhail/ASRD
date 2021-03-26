@@ -3,10 +3,10 @@ import os
 import uuid
 from flask import Flask, render_template, send_from_directory, request, flash,\
     redirect
-import numpy as np
 
 import asrd.config as conf
 from asrd.analyzer import Analyzer
+from asrd.models import FullIsoterm, Bet
 
 app = Flask(__name__)
 app.secret_key = conf.SECRET_KEY
@@ -65,20 +65,14 @@ def view_with_graph(guid, sample_index):
 def api_get_point(guid, sample):
     analyzer = Analyzer()
     analyzer.parse(os.path.join(conf.UPLOAD_PATH, guid))
-    analyzer.models_calculation(int(sample))
+    # analyzer.models_calculation(int(sample))
     sample = analyzer.samples[int(sample)]
-    # x = list(np.arange(0, 1.1, 0.1))
-    # x = [point.p_p1 for point in sample.points if point.adsorb_or_desorb == 0]
-    y_adsorb = [[point.p_p1, point.volume] for point in sample.points if point.adsorb_or_desorb == 0]
-    y_desorb = [[point.p_p1, point.volume] for point in sample.points if point.adsorb_or_desorb == 1]
+    full_isoterm = FullIsoterm(sample)
+    full_isoterm.calculate_params()
+    bet = Bet(sample)
+    bet.calculate_params()
 
-    data = [[
-        y_adsorb,
-        y_desorb
-        # 'x': x,
-        # 'y_adsorb': y_adsorb,
-        # 'y_desorb': y_desorb
-        ]]
+    data = [full_isoterm.calculated_values, bet.calculated_values]
 
     return json.dumps(data)
 
