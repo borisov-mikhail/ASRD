@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import os
 
 import asrd.config as conf
+from asrd.models import FullIsoterm, Bet, DeBoer, GarkinsYura, TechnicalCarbon
 
 
 sns.set_theme(color_codes=True)
@@ -107,42 +108,25 @@ class Analyzer:
     def get_samples_names(self):
         return [sample.sample_name for sample in self.samples]
 
-    def plot_graph(self, index):
-        sample = self.samples[index]
+    def get_options_for_graphs(self, index):
 
-        x = [point.p_p1 for point in sample.points]
-        y = [point.volume for point in sample.points]
-        hue = [point.adsorb_or_desorb for point in sample.points]
+        sample = self.samples[int(index)]
 
+        full_isoterm = FullIsoterm(sample)
+        full_isoterm.calculate_params()
+        bet = Bet(sample)
+        bet.calculate_params()
+        debour = DeBoer(sample)
+        debour.calculate_params()
+        garkins_yura = GarkinsYura(sample)
+        garkins_yura.calculate_params()
+        technical_carbon = TechnicalCarbon(sample)
+        technical_carbon.calculate_params()
 
-        data = {'P/P0_1': x,
-                'V': y,
-                'adsorb_or_desorb': hue}
-        graph_points = pd.DataFrame(data)
-        sns.set_style("ticks", {'xtick.color': '.0', 'ytick.color': '.0'})
-        g = sns.lmplot(
-                       x='P/P0_1',
-                       y='V',
-                       data=graph_points,
-                       hue='adsorb_or_desorb',
-                       height=3,
-                       aspect=4,
-                       legend=0,
-                       fit_reg=False,
-                       scatter_kws={"s": 50}
-                       )
-        plt.title("Изотерма адсорбции", fontsize=18,
-                  bbox=dict(edgecolor='black'),
-                  horizontalalignment='center')
-        plt.ylabel('$V, mm^{3}$', rotation=0, fontsize=14,
-                   verticalalignment='top', horizontalalignment='right')
-        plt.xlabel('$p/p_{0}$', fontsize=16)
-        plt.xticks(np.arange(0, 1.1, step=0.1), fontsize=13)
-        plt.yticks(fontsize=13)
-        plt.grid(True, which=u'major', color='black', linewidth=1.,
-                 linestyle='-')
+        data = [full_isoterm.calculated_values,
+                bet.calculated_values,
+                debour.calculated_values,
+                garkins_yura.calculated_values,
+                technical_carbon.calculated_values]
 
-        filename = str(uuid.uuid4()) + '.jpg'
-        g.savefig(os.path.join(conf.GRAPH_FOLDER, filename))
-
-        return filename
+        return data

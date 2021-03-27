@@ -6,7 +6,7 @@ from flask import Flask, render_template, send_from_directory, request, flash,\
 
 import asrd.config as conf
 from asrd.analyzer import Analyzer
-from asrd.models import FullIsoterm, Bet
+from asrd.models import FullIsoterm, Bet, DeBoer, GarkinsYura, TechnicalCarbon
 
 app = Flask(__name__)
 app.secret_key = conf.SECRET_KEY
@@ -65,16 +65,10 @@ def view_with_graph(guid, sample_index):
 def api_get_point(guid, sample):
     analyzer = Analyzer()
     analyzer.parse(os.path.join(conf.UPLOAD_PATH, guid))
-    # analyzer.models_calculation(int(sample))
-    sample = analyzer.samples[int(sample)]
-    full_isoterm = FullIsoterm(sample)
-    full_isoterm.calculate_params()
-    bet = Bet(sample)
-    bet.calculate_params()
 
-    data = [full_isoterm.calculated_values, bet.calculated_values]
+    options = analyzer.get_options_for_graphs(sample)
 
-    return json.dumps(data)
+    return json.dumps(options)  # data
 
 
 @app.route('/plot/<filename>')
