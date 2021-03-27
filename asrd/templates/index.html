@@ -18,6 +18,18 @@
     ></script>
 
     <style>
+      html,
+      body {
+        min-height: 100vh;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: grid;
+        grid-template-rows: max-content 1fr;
+        min-height: 100vh;
+      }
+
       .content > div {
         width: 100%;
         height: 400px;
@@ -68,7 +80,7 @@
     </nav>
 
     <div class="container-fluid">
-      <div class="row">
+      <div class="row h-100">
         <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
           <div class="position-sticky pt-3">
             <h2 class="h6 sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">Samples</h2>
@@ -101,19 +113,29 @@
           {% if graph %}
             <div id="plot_container" class="content"></div>
           {% else %}
-            <div>
-              <h2>
-                Instruction
-              </h2>
+            <div class="p-3">
+              <h2 class="display-5 p-2">ASRD — Analyzer Sorbi_MS Resulted Data</h2>
+
               <p>
-                Вам необходимо загрузить SRB файл. Он находится в .../SS_4.2_966893-1/data/&lt;operator&gt;/&lt;filename.srb&gt;.
-                <ol>
-                  <li>Нажмите на кнопку "Обзор".</li>
-                  <li>В открывшемся окне перейдите к необходимому файлу, выберите его и нажмите "Открыть".</li>
-                  <li>Загрузите файл, нажав на кнопку "Загрузить".</li>
-                  <li> После загрузки вы можете выбирать образцы в левом меню и смотреть расчеты по ним.</li>
-                </ol>
+                Это приложение для анализа измерений, полученных при помощи прибора Sorbi.
+                Анализ проводится по моделям, не реализованным в стандартном приложении Sorbi.
               </p>
+
+              <p>
+                Для анализа необходимо загрузить SRB-файл с измерениями.
+                SRB-файл — это файл, в который сохраняются измерения по одному или нескольким образцам.
+                Он находится в <code>.../SS_4.2_966893-1/data/&lt;operator&gt;/&lt;filename.srb&gt;.</code>
+              </p>
+
+              <p class="h4">Для загрузки файла:</p>
+
+              <ol>
+                <li>нажмите <code>"Browse"</code> и выберете файл</li>
+                <li>нажмите на кнопку <code>"Upload"</code>;</li>
+                <li>в открывшемся окне перейдите к необходимому файлу, выберите его и нажмите <code>"Открыть"</code>;</li>
+                <li>загрузите файл, нажав на кнопку <code>"Загрузить"</code>;</li>
+                <li>после загрузки вы можете выбирать образцы в левом меню и смотреть расчеты по ним.</li>
+              </ol>
             </div>
           {% endif %}
         </main>
