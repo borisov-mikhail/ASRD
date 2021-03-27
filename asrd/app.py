@@ -6,7 +6,6 @@ from flask import Flask, render_template, send_from_directory, request, flash,\
 
 import asrd.config as conf
 from asrd.analyzer import Analyzer
-from asrd.models import FullIsoterm, Bet, DeBoer, GarkinsYura, TechnicalCarbon
 
 app = Flask(__name__)
 app.secret_key = conf.SECRET_KEY

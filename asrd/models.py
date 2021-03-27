@@ -1,8 +1,8 @@
-from abc import ABC, abstractmethod
 import math
+from abc import ABC, abstractmethod
+
 
 class Models(ABC):
-
     def __init__(self, sample):
         self.calculated_values = []
         self.sample = sample
@@ -11,89 +11,160 @@ class Models(ABC):
     def calculate_params(self):
         pass
 
+    @abstractmethod
+    def render(self):
+        pass
+
 
 class FullIsoterm(Models):
-
     def calculate_params(self):
-        for point in self.sample.points:
-            volume = float(point.S_of_pick) * float(point.grad_koeff) / \
-                     float(self.sample.mass)
-            point.volume = volume
+        y_adsorb = [(point.p_p1, point.get_volume(self.sample)) for point in
+                    self.sample.points
+                    if point.adsorb_or_desorb == 0]
 
-        y_adsorb = [[point.p_p1, point.volume] for point in self.sample.points
-                    if
-                    point.adsorb_or_desorb == 0]
-        y_desorb = [[point.p_p1, point.volume] for point in self.sample.points
-                    if
-                    point.adsorb_or_desorb == 1]
+        y_desorb = [(point.p_p1, point.get_volume(self.sample)) for point in
+                    self.sample.points
+                    if point.adsorb_or_desorb == 1]
+
         self.calculated_values = [y_adsorb, y_desorb]
+
+    def render(self):
+        return {
+            'xAxis': {},
+            'yAxis': {},
+            'tooltip': {},
+            'series': [{
+                'symbolSize': 10,
+                'data': self.calculated_values[0],
+                'type': 'scatter'
+            }, {
+                'symbolSize': 10,
+                'data': self.calculated_values[1],
+                'type': 'scatter'
+            }]
+        }
 
 
 class Bet(Models):
+    def _get_f_param(self, point):
+        return point.p_p1 / point.get_volume(self.sample) / (1 - point.p_p1)
 
     def calculate_params(self):
-        for point in self.sample.points:
-            f_param = point.p_p1 / point.volume / (1 - point.p_p1)
-            point.f_param = f_param
-
-        y = [[point.p_p1, point.f_param] for point in self.sample.points if
+        y = [(point.p_p1, self._get_f_param(point)) for
+             point in self.sample.points if
              0.06 <= point.p_p1 <= 0.2 and point.adsorb_or_desorb == 0]
 
         self.calculated_values = [y]
 
+    def render(self):
+        return {
+            'xAxis': {},
+            'yAxis': {},
+            'tooltip': {},
+            'series': [{
+                'symbolSize': 10,
+                'data': self.calculated_values[0],
+                'type': 'scatter'
+            }]
+        }
+
 
 class DeBoer(Models):
+    def _get_f_param(self, point):
+        return 0.1 * math.sqrt(13.99 / (0.034 - math.log10(point.p_p1)))
 
     def calculate_params(self):
-        for point in self.sample.points:
-            t_param = 0.1 * math.sqrt(13.99 / (0.034 - math.log10(point.p_p1)))
-            point.t_param = t_param
-
-        y = [[point.t_param, point.volume] for point in self.sample.points if
+        y = [(self._get_f_param(point), point.get_volume(self.sample)) for
+             point in
+             self.sample.points if
              0.1 <= point.p_p1 <= 0.75 and point.adsorb_or_desorb == 0]
 
         self.calculated_values = [y]
+
+    def render(self):
+        return {
+            'xAxis': {},
+            'yAxis': {},
+            'tooltip': {},
+            'series': [{
+                'symbolSize': 10,
+                'data': self.calculated_values[0],
+                'type': 'scatter'
+            }]
+        }
 
 
 class Hasley(Models):
+    def _get_hasley_param(self, point):
+        return 0.354 * math.pow(-5 / math.log(point.p_p1), 1 / 3)
 
     def calculate_params(self):
-        for point in self.sample.points:
-            hasley_param = 0.354 * math.pow(-5 / math.log(point.p_p1), 1/3)
-            point.hasley_param = hasley_param
-
-        y = [[point.hasley_param, point.volume] for point in self.sample.points if
-             0.1 <= point.p_p1 <= 0.75 and point.adsorb_or_desorb == 0]
+        y = [(self._get_hasley_param(point), point.get_volume(self.sample)) for
+             point in self.sample.points
+             if 0.1 <= point.p_p1 <= 0.75 and point.adsorb_or_desorb == 0]
 
         self.calculated_values = [y]
 
+    def render(self):
+        return {
+            'xAxis': {},
+            'yAxis': {},
+            'tooltip': {},
+            'series': [{
+                'symbolSize': 10,
+                'data': self.calculated_values[0],
+                'type': 'scatter'
+            }]
+        }
+
 
 class GarkinsYura(Models):
+    def _get_garkins_param(self, point):
+        return 0.1 * math.pow(60.65 / (0.03071 - math.log10(point.p_p1)),
+                              0.3968)
 
     def calculate_params(self):
-        for point in self.sample.points:
-            garkins_param = 0.1 * math.pow(
-                60.65 / (0.03071 - math.log10(point.p_p1)), 0.3968)
-            point.garkins_param = garkins_param
-
-        y = [[point.garkins_param, point.volume] for point in
+        y = [(self._get_garkins_param(point), point.get_volume(self.sample))
+             for point in
              self.sample.points if
              0.1 <= point.p_p1 <= 0.95 and point.adsorb_or_desorb == 0]
 
         self.calculated_values = [y]
 
+    def render(self):
+        return {
+            'xAxis': {},
+            'yAxis': {},
+            'tooltip': {},
+            'series': [{
+                'symbolSize': 10,
+                'data': self.calculated_values[0],
+                'type': 'scatter'
+            }]
+        }
+
 
 class TechnicalCarbon(Models):
+    def _get_carbon_param(self, point):
+        return 0.088 * math.pow(point.p_p1, 2) + \
+               0.645 * point.p_p1 + 0.298
 
     def calculate_params(self):
-        for point in self.sample.points:
-            carbon_param = 0.088 * math.pow(point.p_p1, 2) + \
-                           0.645 * point.p_p1 + 0.298
-
-            point.carbon_param = carbon_param
-
-        y = [[point.carbon_param, point.volume] for point in
+        y = [(self._get_carbon_param(point), point.get_volume(self.sample)) for
+             point in
              self.sample.points if
              0.2 <= point.p_p1 <= 0.5 and point.adsorb_or_desorb == 0]
 
         self.calculated_values = [y]
+
+    def render(self):
+        return {
+            'xAxis': {},
+            'yAxis': {},
+            'tooltip': {},
+            'series': [{
+                'symbolSize': 10,
+                'data': self.calculated_values[0],
+                'type': 'scatter'
+            }]
+        }

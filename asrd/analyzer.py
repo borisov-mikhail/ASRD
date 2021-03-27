@@ -1,18 +1,7 @@
-import uuid
 from dataclasses import dataclass
 from typing import List
 
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import os
-
-import asrd.config as conf
 from asrd.models import FullIsoterm, Bet, DeBoer, GarkinsYura, TechnicalCarbon
-
-
-sns.set_theme(color_codes=True)
 
 
 @dataclass
@@ -28,7 +17,10 @@ class SamplePoint:
     S_of_pick: float
     grad_koeff: float
     adsorb_or_desorb: int
-    volume: float = None
+
+    def get_volume(self, sample):
+        return float(self.S_of_pick) * float(self.grad_koeff) / float(
+            sample.mass)
 
 
 @dataclass
@@ -109,24 +101,17 @@ class Analyzer:
         return [sample.sample_name for sample in self.samples]
 
     def get_options_for_graphs(self, index):
+        sample: Sample = self.samples[int(index)]
 
-        sample = self.samples[int(index)]
+        models = [
+            FullIsoterm(sample),
+            Bet(sample),
+            DeBoer(sample),
+            GarkinsYura(sample),
+            TechnicalCarbon(sample),
+        ]
 
-        full_isoterm = FullIsoterm(sample)
-        full_isoterm.calculate_params()
-        bet = Bet(sample)
-        bet.calculate_params()
-        debour = DeBoer(sample)
-        debour.calculate_params()
-        garkins_yura = GarkinsYura(sample)
-        garkins_yura.calculate_params()
-        technical_carbon = TechnicalCarbon(sample)
-        technical_carbon.calculate_params()
+        for model in models:
+            model.calculate_params()
 
-        data = [full_isoterm.calculated_values,
-                bet.calculated_values,
-                debour.calculated_values,
-                garkins_yura.calculated_values,
-                technical_carbon.calculated_values]
-
-        return data
+        return [model.render() for model in models]
