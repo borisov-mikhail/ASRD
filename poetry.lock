@@ -161,6 +161,17 @@ docs = ["sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet", "sphinx-
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "flask-basicauth"
+version = "0.2.0"
+description = "HTTP basic access authentication for Flask."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Flask = "*"
+
+[[package]]
 name = "fsspec"
 version = "0.8.7"
 description = "File-system specification"
@@ -964,7 +975,7 @@ notebook = ">=4.4.1"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "c81dc1eb251bc4c093c75e765670365653ede04c77cfaf76f5cf039f1684b131"
+content-hash = "0e144059dc7e0e055c70a86d06cfa36bb0f8e4a1039bb8de0cb0ec10aa42a5da"
 
 [metadata.files]
 appnope = [
@@ -1077,6 +1088,9 @@ flake8 = [
 flask = [
     {file = "Flask-1.1.2-py2.py3-none-any.whl", hash = "sha256:8a4fdd8936eba2512e9c85df320a37e694c93945b33ef33c89946a340a238557"},
     {file = "Flask-1.1.2.tar.gz", hash = "sha256:4efa1ae2d7c9865af48986de8aeb8504bf32c7f3d6fdc9353d34b21f4b127060"},
+]
+flask-basicauth = [
+    {file = "Flask-BasicAuth-0.2.0.tar.gz", hash = "sha256:df5ebd489dc0914c224419da059d991eb72988a01cdd4b956d52932ce7d501ff"},
 ]
 fsspec = [
     {file = "fsspec-0.8.7-py3-none-any.whl", hash = "sha256:65dbf8244a3a3d23342109925f9f588c7551b2b01a5f47e555043b17e2b32d62"},

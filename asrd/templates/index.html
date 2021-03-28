@@ -28,6 +28,9 @@
         display: grid;
         grid-template-rows: max-content 1fr;
         min-height: 100vh;
+
+        min-width: 1024px;
+        overflow-x: auto;
       }
 
       .content > div {
@@ -80,12 +83,12 @@
     </nav>
 
     <div class="container-fluid">
-      <div class="row h-100">
-        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="row">
+        {% if samples %}
+        <nav class="col-2 d-md-block bg-light sidebar">
           <div class="position-sticky pt-3">
             <h2 class="h6 sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">Samples</h2>
 
-            {% if samples %}
               <ul class="nav flex-column">
                 {% for index, name in samples %}
                   <li class="nav-item">
@@ -93,11 +96,16 @@
                   </li>
                 {% endfor %}
               </ul>
-            {% endif %}
+
           </div>
         </nav>
+        {% endif %}
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        {% if samples %}
+          <main class="col-10 ms-sm-auto px-md-4">
+        {% else %}
+          <main class="col-12 ms-sm-auto px-md-4">
+        {% endif %}
           <div>
             {% with messages = get_flashed_messages() %}
               {% if messages %}
