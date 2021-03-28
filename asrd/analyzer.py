@@ -1,12 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-sns.set_theme(color_codes=True)
+from asrd.models import FullIsoterm, Bet, DeBoer, GarkinsYura, TechnicalCarbon
 
 
 @dataclass
@@ -22,7 +17,10 @@ class SamplePoint:
     S_of_pick: float
     grad_koeff: float
     adsorb_or_desorb: int
-    volume: float = None
+
+    def get_volume(self, sample):
+        return float(self.S_of_pick) * float(self.grad_koeff) / float(
+            sample.mass)
 
 
 @dataclass
@@ -47,11 +45,13 @@ class Sample:
 
 
 class Analyzer:
-    samples: List[Sample] = []
+    samples: List[Sample]
 
     def parse(self, path):
         with open(path, 'r', encoding='windows-1251') as file:
             content = file.read().strip()
+
+        self.samples = []
 
         for line in content.split('\n'):
             columns = line.split(',')
@@ -100,50 +100,18 @@ class Analyzer:
     def get_samples_names(self):
         return [sample.sample_name for sample in self.samples]
 
-    def models_calculation(self):
-        for sample in self.samples:
-            for point in sample.points:
-                volume = float(point.S_of_pick) * float(point.grad_koeff) / \
-                         float(sample.mass)
-                point.volume = volume
+    def get_options_for_graphs(self, index):
+        sample: Sample = self.samples[int(index)]
 
-    def plot_graph(self, index):
-        sample = self.samples[index]
-        x = []
-        y = []
-        hue = []
-        for point in sample.points:
-            x.append(point.p_p1)
-            y.append(point.volume)
-            hue.append(point.adsorb_or_desorb)
-        data = {'P/P0_1': x,
-                'V': y,
-                'adsorb_or_desorb': hue}
-        graph_points = pd.DataFrame(data)
-        print(graph_points)
-        sns.set_style("ticks", {'xtick.color': '.0', 'ytick.color': '.0'})
-        g = sns.lmplot(
-                       x='P/P0_1',
-                       y='V',
-                       data=graph_points,
-                       hue='adsorb_or_desorb',
-                       height=3,
-                       aspect=4,
-                       legend=0,
-                       fit_reg=False,
-                       scatter_kws={"s": 50}
-                       )
-        plt.title("Изотерма адсорбции", fontsize=18,
-                  bbox=dict(edgecolor='black'),
-                  horizontalalignment='center')
-        plt.ylabel('$V, mm^{3}$', rotation=0, fontsize=14,
-                   verticalalignment='top', horizontalalignment='right')
-        plt.xlabel('$p/p_{0}$', fontsize=16)
-        plt.xticks(np.arange(0, 1.1, step=0.1), fontsize=13)
-        plt.yticks(fontsize=13)
-        plt.grid(True, which=u'major', color='black', linewidth=1.,
-                 linestyle='-')
-        path = "./data/test.jpg"
-        g.savefig(path)
-        return path
+        models = [
+            FullIsoterm(sample),
+            Bet(sample),
+            DeBoer(sample),
+            GarkinsYura(sample),
+            TechnicalCarbon(sample),
+        ]
 
+        for model in models:
+            model.calculate_params()
+
+        return [model.render() for model in models]
