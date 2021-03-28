@@ -78,10 +78,4 @@ def api_get_point(guid, sample):
 
     options = analyzer.get_options_for_graphs(sample)
 
-    return json.dumps(options)  # data
-
-
-@app.route('/plot/<filename>')
-@basic_auth.required
-def send_plot(filename):
-    return send_from_directory(conf.GRAPH_FOLDER, filename)
+    return json.dumps(options)
