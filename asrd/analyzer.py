@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
-from asrd.models import FullIsoterm, Bet, DeBoer, GarkinsYura, TechnicalCarbon
+from asrd.models import FullIsoterm, Bet, DeBoer, GarkinsYura, \
+    TechnicalCarbon, Hasley
 
 
 @dataclass
@@ -19,8 +20,8 @@ class SamplePoint:
     adsorb_or_desorb: int
 
     def get_volume(self, sample):
-        return float(self.S_of_pick) * float(self.grad_koeff) / float(
-            sample.mass)
+        return round(float(self.S_of_pick) * float(self.grad_koeff) / float(
+            sample.mass), 4)
 
 
 @dataclass
@@ -104,11 +105,12 @@ class Analyzer:
         sample: Sample = self.samples[int(index)]
 
         models = [
-            FullIsoterm(sample),
-            Bet(sample),
-            DeBoer(sample),
-            GarkinsYura(sample),
-            TechnicalCarbon(sample),
+            FullIsoterm(sample, title='Изотерма Адсорбции', x_axis_name='P/P₀', y_axis_name='V, мл'),
+            Bet(sample, title='БЭТ', x_axis_name='h=P/P₀', y_axis_name='f=h/V(1-h), г/мл'),
+            DeBoer(sample, title='Модель Де-Бура', x_axis_name='t, нм', y_axis_name='f=h/V(1-h), г/мл'),
+            Hasley(sample, title='Модель Хэсли', x_axis_name='t, нм', y_axis_name='f=h/V(1-h), г/мл'),
+            GarkinsYura(sample, title='Модель Гаркинс-Юра', x_axis_name='t, нм', y_axis_name='f=h/V(1-h), г/мл'),
+            TechnicalCarbon(sample, title='Модель технического углерода', x_axis_name='t, нм', y_axis_name='f=h/V(1-h), г/мл'),
         ]
 
         for model in models:
