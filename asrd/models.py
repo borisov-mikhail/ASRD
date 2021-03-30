@@ -17,15 +17,15 @@ class Models(ABC):
     @abstractmethod
     def render(self):
         return {
-            'dataset': [{
-                'source': self.calculated_values[0],
-            }, {
-                'transform': {
-                    'type': 'ecStat:regression'
-                    # 'linear' by default.
-                    # config: { method: 'linear', formulaOn: 'end'}
-                }
-            }],
+            # 'dataset': [{
+            #     'source': self.calculated_values[0],
+            # }, {
+            #     'transform': {
+            #         'type': 'ecStat:regression'
+            #         # 'linear' by default.
+            #         # config: { method: 'linear', formulaOn: 'end'}
+            #     }
+            # }],
             'title': {
                 'text': self.title,
                 'left': 'center',
@@ -62,21 +62,21 @@ class Models(ABC):
                 },
             },
             'series': [{
-                # 'symbolSize': 10,
-                # 'data': self.calculated_values[0],
+                'symbolSize': 10,
+                'data': self.calculated_values[0],
                 'name': 'адсорбция',
                 'type': 'scatter'
                 },
-                {
-                'name': 'line',
-                'type': 'line',
-                'datasetIndex': 1,
-                'symbolSize': 0.1,
-                'symbol': 'circle',
-                'label': {'show': True, 'fontSize': 16},
-                'labelLayout': {'dx': -20},
-                'encode': {'label': 2, 'tooltip': 1}
-            }]
+                # {
+                # 'name': 'line',
+                # 'type': 'line',
+                # 'datasetIndex': 1,
+                # 'symbolSize': 0.1,
+                # 'symbol': 'circle',
+                # 'label': {'show': True, 'fontSize': 16},
+                # 'labelLayout': {'dx': -20},
+                # 'encode': {'label': 2, 'tooltip': 1}
+            ]
         }
 
 
