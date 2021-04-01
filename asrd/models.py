@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 
 class Models(ABC):
-    def __init__(self, sample, title, x_axis_name, y_axis_name):
+    def __init__(self, sample, title, x_axis_name, y_axis_name, ):
         self.calculated_values = []
         self.sample = sample
         self.title = title
@@ -13,6 +13,10 @@ class Models(ABC):
     @abstractmethod
     def calculate_params(self):
         pass
+
+    def get_x_min_max_value(self):
+        return [round(min([value[0] for value in self.calculated_values[0]]), 1) - 0.1,
+                round(max([value[0] for value in self.calculated_values[0]]), 1) + 0.1]
 
     @abstractmethod
     def render(self):
@@ -41,18 +45,17 @@ class Models(ABC):
                 },
             },
 
-            'legend': {
-                'bottom': 20,
-            },
-            'xAxis': {
+            'xAxis': [{
                 'name': self.x_axis_name,
+                'min': self.get_x_min_max_value()[0],
+                'man': self.get_x_min_max_value()[1],
                 'nameTextStyle': {
                     'fontWeight': 'bolder',
                     'fontStyle': 'italic',
                     'fontSize': 16,
                 },
                 'splitNumber': 10,
-            },
+            }],
             'yAxis': {
                 'name': self.y_axis_name,
                 'nameTextStyle': {
@@ -61,12 +64,50 @@ class Models(ABC):
                     'fontSize': 16,
                 },
             },
+            'graphic': [
+                {
+                    'type': 'group',
+                    'left': '10%',
+                    'top': '15%',
+                    'children': [
+                        {
+                            'type': 'rect',
+                            'z': 100,
+                            'left': 'center',
+                            'top': 'middle',
+                            'shape': {
+                                'width': 150,
+                                'height': 40
+                            },
+                            'style': {
+                                'fill': '#fff',
+                                'stroke': '#555',
+                                'lineWidth': 1,
+                                'shadowBlur': 8,
+                                'shadowOffsetX': 3,
+                                'shadowOffsetY': 3,
+                                'shadowColor': 'rgba(0,0,0,0.2)'
+                            }
+                        },
+                        {
+                            'type': 'text',
+                            'z': 100,
+                            'left': 'center',
+                            'top': 'middle',
+                            'style': {
+                                'fill': '#333',
+                                'text': 'S уд\nS',
+                                'font': '14px Microsoft YaHei'
+                            }
+                        }
+                    ]
+                }
+            ],
             'series': [{
                 'symbolSize': 10,
                 'data': self.calculated_values[0],
-                'name': 'адсорбция',
-                'type': 'scatter'
-                },
+                'type': 'scatter',
+            },
                 # {
                 # 'name': 'line',
                 # 'type': 'line',
@@ -147,10 +188,11 @@ class FullIsoterm(Models):
 
 class Bet(Models):
     def _get_f_param(self, point):
-        return point.p_p1 / point.get_volume(self.sample) / (1 - point.p_p1)
+        return round(
+            (point.p_p1 / point.get_volume(self.sample) / (1 - point.p_p1)), 4)
 
     def calculate_params(self):
-        y = [(point.p_p1, self._get_f_param(point)) for
+        y = [(round(point.p_p1, 2), self._get_f_param(point)) for
              point in self.sample.points if
              0.06 <= point.p_p1 <= 0.2 and point.adsorb_or_desorb == 0]
 

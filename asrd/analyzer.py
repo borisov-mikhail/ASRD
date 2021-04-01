@@ -105,12 +105,12 @@ class Analyzer:
         sample: Sample = self.samples[int(index)]
 
         models = [
-            FullIsoterm(sample, title='Изотерма Адсорбции', x_axis_name='P/P₀', y_axis_name='V, мл'),
+            FullIsoterm(sample, title='Изотерма Адсорбции', x_axis_name='P/P₀', y_axis_name='V, мл/г'),
             Bet(sample, title='БЭТ', x_axis_name='h=P/P₀', y_axis_name='f=h/V(1-h), г/мл'),
-            DeBoer(sample, title='Модель Де-Бура', x_axis_name='t, нм', y_axis_name='f=h/V(1-h), г/мл'),
-            Hasley(sample, title='Модель Хэсли', x_axis_name='t, нм', y_axis_name='f=h/V(1-h), г/мл'),
-            GarkinsYura(sample, title='Модель Гаркинс-Юра', x_axis_name='t, нм', y_axis_name='f=h/V(1-h), г/мл'),
-            TechnicalCarbon(sample, title='Модель технического углерода', x_axis_name='t, нм', y_axis_name='f=h/V(1-h), г/мл'),
+            DeBoer(sample, title='Модель Де-Бура', x_axis_name='t, нм', y_axis_name='V, мл/г'),
+            Hasley(sample, title='Модель Хэсли', x_axis_name='t, нм', y_axis_name='V, мл/г'),
+            GarkinsYura(sample, title='Модель Гаркинс-Юра', x_axis_name='t, нм', y_axis_name='V, мл/г'),
+            TechnicalCarbon(sample, title='Модель технического углерода', x_axis_name='t, нм', y_axis_name='V, мл/г'),
         ]
 
         for model in models:
