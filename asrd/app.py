@@ -1,20 +1,12 @@
 import json
 import os
 import uuid
-from flask import Flask, render_template, send_from_directory, request, flash,\
-    redirect
-from flask_basicauth import BasicAuth
 
+from flask import render_template, request, flash, redirect
 
 import asrd.config as conf
+from asrd import app, basic_auth
 from asrd.analyzer import Analyzer
-
-app = Flask(__name__)
-app.secret_key = conf.SECRET_KEY
-app.config['BASIC_AUTH_USERNAME'] = conf.BASIC_AUTH_USERNAME
-app.config['BASIC_AUTH_PASSWORD'] = conf.BASIC_AUTH_PASSWORD
-
-basic_auth = BasicAuth(app)
 
 
 @app.route('/')
@@ -49,8 +41,8 @@ def upload_srb_file():
 @basic_auth.required
 def view(guid):
     analyzer = Analyzer()
-    analyzer.parse(os.path.join(conf.UPLOAD_PATH, guid))
-    samples_names = analyzer.get_samples_names()
+    analyzer.parse(guid)
+    samples_names = analyzer.get_samples_names(guid)
 
     return render_template('index.html',
                            file=guid,
@@ -61,8 +53,8 @@ def view(guid):
 @basic_auth.required
 def view_with_graph(guid, sample_index):
     analyzer = Analyzer()
-    analyzer.parse(os.path.join(conf.UPLOAD_PATH, guid))
-    samples_names = analyzer.get_samples_names()
+    analyzer.parse(guid)
+    samples_names = analyzer.get_samples_names(guid)
     return render_template('index.html',
                            file=guid,
                            graph=True,
@@ -74,7 +66,7 @@ def view_with_graph(guid, sample_index):
 @basic_auth.required
 def api_get_point(guid, sample):
     analyzer = Analyzer()
-    analyzer.parse(os.path.join(conf.UPLOAD_PATH, guid))
+    analyzer.parse(guid)
 
     options = analyzer.get_options_for_graphs(sample)
 
