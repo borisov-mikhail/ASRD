@@ -28,46 +28,45 @@ def upload_srb_file():
         return redirect('/')
 
     if file:
-        filename = str(uuid.uuid4())
-        file.save(os.path.join(conf.UPLOAD_PATH, filename))
+        analyzer = Analyzer()
+        id = analyzer.parse(file)
 
-        return redirect(f'/view/{filename}')
+        return redirect(f'/view/{id}')
     else:
         flash('Allowed file types are srb')
         return redirect('/')
 
 
-@app.route('/view/<guid>/')
+@app.route('/view/<set_id>/')
 @basic_auth.required
-def view(guid):
+def view(set_id):
     analyzer = Analyzer()
-    analyzer.parse(guid)
-    samples_names = analyzer.get_samples_names(guid)
+    samples = analyzer.get_samples(set_id)
 
     return render_template('index.html',
-                           file=guid,
-                           samples=enumerate(samples_names))
+                           set_id=set_id,
+                           samples=enumerate(samples))
 
 
-@app.route('/view/<guid>/<sample_index>/')
+@app.route('/view/<set_id>/<sample_id>/')
 @basic_auth.required
-def view_with_graph(guid, sample_index):
+def view_with_graph(set_id, sample_id):
     analyzer = Analyzer()
-    analyzer.parse(guid)
-    samples_names = analyzer.get_samples_names(guid)
+    samples = analyzer.get_samples(set_id)
+
     return render_template('index.html',
-                           file=guid,
                            graph=True,
-                           sample_index=int(sample_index),
-                           samples=enumerate(samples_names))
+                           set_id=set_id,
+                           sample_id=int(sample_id),
+                           samples=enumerate(samples))
 
 
-@app.route('/api/points/<guid>/<sample>')
+@app.route('/api/points/<set_id>/<sample_id>')
 @basic_auth.required
-def api_get_point(guid, sample):
+def api_get_point(set_id, sample_id):
     analyzer = Analyzer()
-    analyzer.parse(guid)
+    # analyzer.parse(set_id)
 
-    options = analyzer.get_options_for_graphs(sample)
+    options = analyzer.get_options_for_graphs(sample_id)
 
     return json.dumps(options)

@@ -3,10 +3,10 @@ from abc import ABC, abstractmethod
 
 
 class Models(ABC):
-    def __init__(self, sample, title, x_axis_name, y_axis_name, ):
+    def __init__(self, sample, x_axis_name, y_axis_name, ):
+        self.title = None
         self.calculated_values = []
         self.sample = sample
-        self.title = title
         self.x_axis_name = x_axis_name
         self.y_axis_name = y_axis_name
 
@@ -54,7 +54,7 @@ class Models(ABC):
                 'xAxis': [{
                     'name': self.x_axis_name,
                     'min': self.get_x_min_max_value()[0],
-                    'man': self.get_x_min_max_value()[1],
+                    'max': self.get_x_min_max_value()[1],
                     'nameTextStyle': {
                         'fontWeight': 'bolder',
                         'fontStyle': 'italic',
@@ -135,16 +135,16 @@ class Models(ABC):
 
 
 class FullIsoterm(Models):
-    def calculate_params(self):
-        y_adsorb = [(round(point.p_p0, 2), point.get_volume(self.sample)) for
-                    point in
-                    self.sample.points
-                    if point.adsorb_or_desorb == 0]
+    def __init__(self, sample, x_axis_name, y_axis_name):
+        super().__init__(sample, x_axis_name, y_axis_name)
+        self.title = "Изотерма Адсорбции"
 
-        y_desorb = [(round(point.p_p0, 2), point.get_volume(self.sample)) for
-                    point in
-                    self.sample.points
-                    if point.adsorb_or_desorb == 1]
+    def calculate_params(self):
+        y_adsorb = [(round(point.p_p0, 2), round(point.volume, 4)) for point in
+                    self.sample.points if point.adsorb_or_desorb == 0]
+
+        y_desorb = [(round(point.p_p0, 2), round(point.volume, 4)) for point in
+                    self.sample.points if point.adsorb_or_desorb == 1]
 
         self.calculated_values = [y_adsorb, y_desorb]
 
@@ -198,14 +198,16 @@ class FullIsoterm(Models):
                     'type': 'scatter'
                 }]
             }
-        else:
-            pass
 
 
 class Bet(Models):
+    def __init__(self, sample, x_axis_name, y_axis_name):
+        super().__init__(sample, x_axis_name, y_axis_name)
+        self.title = 'БЭТ'
+
     def _get_f_param(self, point):
         return round(
-            (point.p_p0 / point.get_volume(self.sample) / (1 - point.p_p0)), 4)
+            (point.p_p0 / point.volume / (1 - point.p_p0)), 4)
 
     def calculate_params(self):
         y = [(round(point.p_p0, 2), self._get_f_param(point)) for
@@ -219,12 +221,15 @@ class Bet(Models):
 
 
 class DeBoer(Models):
+    def __init__(self, sample, x_axis_name, y_axis_name):
+        super().__init__(sample, x_axis_name, y_axis_name)
+        self.title = 'Модель Де-Бура'
+
     def _get_f_param(self, point):
         return 0.1 * math.sqrt(13.99 / (0.034 - math.log10(point.p_p0)))
 
     def calculate_params(self):
-        y = [(self._get_f_param(point), point.get_volume(self.sample)) for
-             point in
+        y = [(self._get_f_param(point), point.volume) for point in
              self.sample.points if
              0.1 <= point.p_p0 <= 0.75 and point.adsorb_or_desorb == 0]
 
@@ -235,11 +240,15 @@ class DeBoer(Models):
 
 
 class Hasley(Models):
+    def __init__(self, sample, x_axis_name, y_axis_name):
+        super().__init__(sample, x_axis_name, y_axis_name)
+        self.title = 'Модель Хэсли'
+
     def _get_hasley_param(self, point):
         return 0.354 * math.pow(-5 / math.log(point.p_p0), 1 / 3)
 
     def calculate_params(self):
-        y = [(self._get_hasley_param(point), point.get_volume(self.sample)) for
+        y = [(self._get_hasley_param(point), point.volume) for
              point in self.sample.points
              if 0.1 <= point.p_p0 <= 0.75 and point.adsorb_or_desorb == 0]
 
@@ -250,12 +259,16 @@ class Hasley(Models):
 
 
 class GarkinsYura(Models):
+    def __init__(self, sample, x_axis_name, y_axis_name):
+        super().__init__(sample, x_axis_name, y_axis_name)
+        self.title = 'Модель Гаркинс-Юра'
+
     def _get_garkins_param(self, point):
         return 0.1 * math.pow(60.65 / (0.03071 - math.log10(point.p_p0)),
                               0.3968)
 
     def calculate_params(self):
-        y = [(self._get_garkins_param(point), point.get_volume(self.sample))
+        y = [(self._get_garkins_param(point), point.volume)
              for point in
              self.sample.points if
              0.1 <= point.p_p0 < 0.95 and point.adsorb_or_desorb == 0]
@@ -267,12 +280,16 @@ class GarkinsYura(Models):
 
 
 class TechnicalCarbon(Models):
+    def __init__(self, sample, x_axis_name, y_axis_name):
+        super().__init__(sample, x_axis_name, y_axis_name)
+        self.title = 'Модель технического углерода',
+
     def _get_carbon_param(self, point):
         return 0.088 * math.pow(point.p_p0, 2) + \
                0.645 * point.p_p0 + 0.298
 
     def calculate_params(self):
-        y = [(self._get_carbon_param(point), point.get_volume(self.sample)) for
+        y = [(self._get_carbon_param(point), point.volume) for
              point in
              self.sample.points if
              0.2 <= point.p_p0 <= 0.5 and point.adsorb_or_desorb == 0]

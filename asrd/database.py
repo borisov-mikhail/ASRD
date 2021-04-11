@@ -1,9 +1,18 @@
+from datetime import datetime
+
 from asrd import db
+
+
+class MeasuringSet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(32))
+    created_date = db.Column(db.DateTime, default=datetime.utcnow)
+    samples = db.relationship('Sample', backref='measuring_set', lazy='dynamic')
 
 
 class Sample(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(36))
+    measuring_set_id = db.Column(db.Integer, db.ForeignKey('measuring_set.id'))
     create_time = db.Column(db.String(32))
     sample_name = db.Column(db.String(32))
     operator = db.Column(db.String(32))
@@ -35,3 +44,4 @@ class SamplePoint(db.Model):
     S_of_pick = db.Column(db.Float)
     grad_koeff = db.Column(db.Float)
     adsorb_or_desorb = db.Column(db.Integer)
+    volume = db.Column(db.Float)

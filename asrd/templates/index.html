@@ -92,11 +92,11 @@
           Samples</h2>
 
         <ul class="nav flex-column">
-          {% for index, name in samples %}
-          <li class="nav-item">
-            <a class="nav-link {% if index == sample_index %}active{% endif %}"
-               href="/view/{{file}}/{{index}}">{{name}}</a>
-          </li>
+          {% for index, sample in samples %}
+            <li class="nav-item">
+              <a class="nav-link {% if index == sample.id %}active{% endif %}"
+                 href="/view/{{set_id}}/{{sample.id}}">{{sample.sample_name}}</a>
+            </li>
           {% endfor %}
         </ul>
 
