@@ -25,17 +25,25 @@ class Models(ABC):
             return [0, 1]
 
     @abstractmethod
+    def lineal_regression(self, calculated_values):
+        n = len(calculated_values[0])
+        sum_x = sum(value[0] for value in calculated_values[0])
+        sum_y = sum(value[1] for value in calculated_values[0])
+        sum_x_y = sum(value[0] * value[1] for value in calculated_values[0])
+        sum_x_2 = sum(value[0] * value[0] for value in calculated_values[0])
+        a = ((sum_x * sum_y) - (n * sum_x_y)) / (
+                    (sum_x * sum_x) - (n * sum_x_2))
+        b = ((sum_x * sum_x_y) - (sum_x_2 * sum_y)) / (
+                    (sum_x * sum_x) - (n * sum_x_2))
+
+        regression_points = [(a, b), [(value[0], a * value[0] + b) for value in
+                                      calculated_values[0]]]
+        return regression_points
+
+    @abstractmethod
     def render(self):
         if len(self.calculated_values[0]) > 1:
             return {
-                'dataset': [{
-                    'source': self.calculated_values[0],
-                }, {
-                    'transform': {
-                        'type': 'ecStat:regression',
-                        'config': {'method': 'linear', 'formulaOn': 'end'}
-                    }
-                }],
                 'title': {
                     'text': self.title,
                     'left': 'center',
@@ -115,20 +123,36 @@ class Models(ABC):
                     'type': 'scatter',
                 },
                     {
-                        'name': 'Линейная апроксимация',
+                        'name': 'Апроксимация',
                         'type': 'line',
+                        'data': self.lineal_regression(self.calculated_values)[1],
                         'smooth': True,
-                        'datasetIndex': 1,
                         'symbolSize': 0.1,
                         'symbol': 'circle',
-                        'label': {
-                            'show': True,
-                            'fontSize': 14,
-                        },
-                        'labelLayout': {'dx': -50},
-                        'encode': {'label': 2, 'tooltip': 1}
+                        'markLine': {
+                            'animation': False,
+                            'label': {
+                                'formatter': 'y = 0.5 * x + 3',
+                                'align': 'right',
+                                'distance': [-15, 20],
+                                'fontSize': 14
+                            },
+                            'lineStyle': {
+                                'type': 'solid',
+                                'width': 2.5
+                            },
 
-                    }]
+                            'data': [[{
+                                'coord': self.lineal_regression(self.calculated_values)[1][0],
+                                'symbol': 'none'
+                            }, {
+                                'coord': self.lineal_regression(self.calculated_values)[1][-1],
+                                'symbol': 'none'
+                            }]]
+                        }
+
+                    }
+                ]
             }
         else:
             pass
@@ -138,6 +162,9 @@ class FullIsoterm(Models):
     def __init__(self, sample, x_axis_name, y_axis_name):
         super().__init__(sample, x_axis_name, y_axis_name)
         self.title = "Изотерма Адсорбции"
+
+    def lineal_regression(self):
+        pass
 
     def calculate_params(self):
         y_adsorb = [(round(point.p_p0, 2), round(point.volume, 4)) for point in
@@ -171,6 +198,7 @@ class FullIsoterm(Models):
                 },
                 'xAxis': {
                     'name': self.x_axis_name,
+                    'type': 'value',
                     'nameTextStyle': {
                         'fontWeight': 'bolder',
                         'fontStyle': 'italic',
@@ -180,6 +208,7 @@ class FullIsoterm(Models):
                 },
                 'yAxis': {
                     'name': self.y_axis_name,
+                    'type': 'value',
                     'nameTextStyle': {
                         'fontWeight': 'bolder',
                         'fontStyle': 'italic',
@@ -206,11 +235,13 @@ class Bet(Models):
         self.title = 'БЭТ'
 
     def _get_f_param(self, point):
-        return round(
-            (point.p_p0 / point.volume / (1 - point.p_p0)), 4)
+        return point.p_p0 / point.volume / (1 - point.p_p0)
+
+    def lineal_regression(self, calculated_values):
+        return super().lineal_regression(calculated_values)
 
     def calculate_params(self):
-        y = [(round(point.p_p0, 2), self._get_f_param(point)) for
+        y = [(point.p_p0, self._get_f_param(point)) for
              point in self.sample.points if
              0.06 <= point.p_p0 <= 0.2 and point.adsorb_or_desorb == 0]
 
@@ -226,10 +257,14 @@ class DeBoer(Models):
         self.title = 'Модель Де-Бура'
 
     def _get_f_param(self, point):
-        return 0.1 * math.sqrt(13.99 / (0.034 - math.log10(point.p_p0)))
+        return round(0.1 * math.sqrt(13.99 / (0.034 - math.log10(point.p_p0))),
+                     3)
+
+    def lineal_regression(self, calculated_values):
+        return super().lineal_regression(calculated_values)
 
     def calculate_params(self):
-        y = [(self._get_f_param(point), point.volume) for point in
+        y = [(self._get_f_param(point), round(point.volume, 4)) for point in
              self.sample.points if
              0.1 <= point.p_p0 <= 0.75 and point.adsorb_or_desorb == 0]
 
@@ -245,10 +280,13 @@ class Hasley(Models):
         self.title = 'Модель Хэсли'
 
     def _get_hasley_param(self, point):
-        return 0.354 * math.pow(-5 / math.log(point.p_p0), 1 / 3)
+        return round(0.354 * math.pow(-5 / math.log(point.p_p0), 1 / 3), 3)
+
+    def lineal_regression(self, calculated_values):
+        return super().lineal_regression(calculated_values)
 
     def calculate_params(self):
-        y = [(self._get_hasley_param(point), point.volume) for
+        y = [(self._get_hasley_param(point), round(point.volume, 4)) for
              point in self.sample.points
              if 0.1 <= point.p_p0 <= 0.75 and point.adsorb_or_desorb == 0]
 
@@ -264,11 +302,14 @@ class GarkinsYura(Models):
         self.title = 'Модель Гаркинс-Юра'
 
     def _get_garkins_param(self, point):
-        return 0.1 * math.pow(60.65 / (0.03071 - math.log10(point.p_p0)),
-                              0.3968)
+        return round(0.1 * math.pow(60.65 / (0.03071 - math.log10(point.p_p0)),
+                                    0.3968), 3)
+
+    def lineal_regression(self, calculated_values):
+        return super().lineal_regression(calculated_values)
 
     def calculate_params(self):
-        y = [(self._get_garkins_param(point), point.volume)
+        y = [(self._get_garkins_param(point), round(point.volume, 4))
              for point in
              self.sample.points if
              0.1 <= point.p_p0 < 0.95 and point.adsorb_or_desorb == 0]
@@ -285,11 +326,14 @@ class TechnicalCarbon(Models):
         self.title = 'Модель технического углерода',
 
     def _get_carbon_param(self, point):
-        return 0.088 * math.pow(point.p_p0, 2) + \
-               0.645 * point.p_p0 + 0.298
+        return round(
+            (0.088 * math.pow(point.p_p0, 2) + 0.645 * point.p_p0 + 0.298), 3)
+
+    def lineal_regression(self, calculated_values):
+        return super().lineal_regression(calculated_values)
 
     def calculate_params(self):
-        y = [(self._get_carbon_param(point), point.volume) for
+        y = [(self._get_carbon_param(point), round(point.volume, 4)) for
              point in
              self.sample.points if
              0.2 <= point.p_p0 <= 0.5 and point.adsorb_or_desorb == 0]
