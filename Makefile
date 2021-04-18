@@ -1,4 +1,4 @@
-.PHONY: test
+a.PHONY: test
 test: lint
 
 .PHONY: lint
@@ -7,10 +7,10 @@ lint:
 
 .PHONY: db
 db:
-	FLASK_APP=asrd/app.py flask db init
-	FLASK_APP=asrd/app.py flask db migrate
-	FLASK_APP=asrd/app.py flask db upgrade
+	FLASK_APP=asrd:app flask db init
+	FLASK_APP=asrd:app flask db migrate
+	FLASK_APP=asrd:app flask db upgrade
 
 .PHONY: start
 start:
-	FLASK_APP=asrd/app.py flask run
+	FLASK_APP=asrd:app flask run

@@ -1,6 +1,6 @@
 from typing import List
 
-from asrd import db
+from asrd.database import db
 from asrd.database import MeasuringSet, Sample, SamplePoint
 from asrd.models import FullIsoterm, Bet, DeBoer, HarkinsJura, \
     TechnicalCarbon, Hasley, BrookhoffDeBoer
