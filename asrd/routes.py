@@ -4,6 +4,8 @@ from asrd.app import app, basic_auth
 
 from asrd.analyzer import Analyzer
 
+import json
+
 
 @app.route('/')
 @basic_auth.required
