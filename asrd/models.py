@@ -15,37 +15,50 @@ class Models(ABC):
     def calculate_params(self):
         pass
 
-    def get_x_min_max_value(self):
+    def get_min_max_values(self):
         if len(self.calculated_values[0]) > 0:
-            return [
+            x_min_max_values = [
                 round(min([value[0] for value in self.calculated_values[0]]),
                       1) - 0.1,
                 round(max([value[0] for value in self.calculated_values[0]]),
                       1) + 0.1]
+            y_min_max_values = [0, round(
+                max([value[1] for value in self.calculated_values[0]]),
+                -1) + 10]
+            return [x_min_max_values, y_min_max_values]
         else:
             return [0, 1]
 
     @abstractmethod
     def lineal_regression(self, calculated_values):
-        n = len(calculated_values[0])
-        sum_x = sum(value[0] for value in calculated_values[0])
-        sum_y = sum(value[1] for value in calculated_values[0])
-        sum_x_y = sum(value[0] * value[1] for value in calculated_values[0])
-        sum_x_2 = sum(value[0] * value[0] for value in calculated_values[0])
-        a = ((sum_x * sum_y) - (n * sum_x_y)) / (
-                (sum_x * sum_x) - (n * sum_x_2))
-        b = ((sum_x * sum_x_y) - (sum_x_2 * sum_y)) / (
-                (sum_x * sum_x) - (n * sum_x_2))
-        if b >= 0:
-            equation = 'y = ' + str(round(a, 3)) + 'x + ' + str(round(b, 3))
+        if len(calculated_values[0]) == 0:
+            return None
+        elif len(calculated_values[0]) <= 4:
+            n = len(calculated_values[0])
         else:
-            equation = 'y = ' + str(round(a, 3)) + 'x - ' + str(
-                round(abs(b), 3))
+            n = 4
 
-        regression_points = [(a, b, equation),
-                             [(value[0], a * value[0] + b) for value in
-                              calculated_values[0]]]
-        return regression_points
+        if n > 1:
+            sum_x = sum(value[0] for value in calculated_values[0][:n])
+            sum_y = sum(value[1] for value in calculated_values[0][:n])
+            sum_x_y = sum(
+                value[0] * value[1] for value in calculated_values[0][:n])
+            sum_x_2 = sum(
+                value[0] * value[0] for value in calculated_values[0][:n])
+            a = ((sum_x * sum_y) - (n * sum_x_y)) / (
+                    (sum_x * sum_x) - (n * sum_x_2))
+            b = ((sum_x * sum_x_y) - (sum_x_2 * sum_y)) / (
+                    (sum_x * sum_x) - (n * sum_x_2))
+            if b >= 0:
+                equation = 'y = ' + str(round(a, 3)) + 'x + ' + str(round(b, 3))
+            else:
+                equation = 'y = ' + str(round(a, 3)) + 'x - ' + str(
+                    round(abs(b), 3))
+
+            regression_points = [(a, b, equation),
+                                 [(value[0], a * value[0] + b) for value in
+                                  calculated_values[0][:n]]]
+            return regression_points
 
     @abstractmethod
     def render(self):
@@ -68,8 +81,8 @@ class Models(ABC):
 
                 'xAxis': [{
                     'name': self.x_axis_name,
-                    'min': self.get_x_min_max_value()[0],
-                    'max': self.get_x_min_max_value()[1],
+                    'min': self.get_min_max_values()[0][0],
+                    'max': self.get_min_max_values()[0][1],
                     'nameTextStyle': {
                         'fontWeight': 'bolder',
                         'fontStyle': 'italic',
@@ -79,6 +92,8 @@ class Models(ABC):
                 }],
                 'yAxis': {
                     'name': self.y_axis_name,
+                    'min': self.get_min_max_values()[1][0],
+                    'max': self.get_min_max_values()[1][1],
                     'nameTextStyle': {
                         'fontWeight': 'bolder',
                         'fontStyle': 'italic',
@@ -97,8 +112,8 @@ class Models(ABC):
                                 'left': 'center',
                                 'top': 'middle',
                                 'shape': {
-                                    'width': 150,
-                                    'height': 40
+                                    'width': 180,
+                                    'height': 45
                                 },
                                 'style': {
                                     'fill': '#fff',
@@ -117,8 +132,9 @@ class Models(ABC):
                                 'top': 'middle',
                                 'style': {
                                     'fill': '#333',
+                                    'lineHeight': 20,
                                     'text': self.s_udel,
-                                    'font': '14px Microsoft YaHei',
+                                    'font': '14px/2 Microsoft YaHei',
                                 }
                             }
                         ]
@@ -143,7 +159,7 @@ class Models(ABC):
                                 'formatter': self.lineal_regression(
                                     self.calculated_values)[0][2],
                                 'align': 'right',
-                                'distance': [-15, 20],
+                                'distance': [-15, 100],
                                 'fontSize': 14
                             },
                             'lineStyle': {
@@ -252,15 +268,17 @@ class Bet(Models):
     def calculate_params(self):
         y = [(point.p_p0, self._get_f_param(point)) for
              point in self.sample.points if
-             0.06 <= point.p_p0 <= 0.2 and point.adsorb_or_desorb == 0]
+             0.06 <= point.p_p0 <= 0.3 and point.adsorb_or_desorb == 0]
 
         self.calculated_values = [y]
 
     def render(self):
-        self.s_udel = 'Sуд = ' + str(round(4353.75 / (
-                self.lineal_regression(self.calculated_values)[0][0] +
-                self.lineal_regression(self.calculated_values)[0][1]),
-                                           2)) + ' м²/г'
+        if self.lineal_regression(self.calculated_values):
+            self.s_udel = 'Sуд = ' + str(round(4353.75 / (
+                    self.lineal_regression(self.calculated_values)[0][0] +
+                    self.lineal_regression(self.calculated_values)[0][1]),
+                                               2)) + ' м²/г'
+
         return super().render()
 
 
@@ -284,19 +302,24 @@ class DeBoer(Models):
         self.calculated_values = [y]
 
     def render(self):
-        # self.s_udel = 'Sуд = ' + str(
-        #     round(self.lineal_regression(self.calculated_values)[0][0],
-        #           2)) + ' м²/г'
-        self.s_udel = 'Sуд = ' + str(round(4.35375 * 0.354 * (
-            self.lineal_regression(self.calculated_values)[0][0]),
-                                           2)) + ' м²/г'
+        if self.lineal_regression(self.calculated_values):
+            self.s_udel = 'Sуд = ' + str(round(4.35375 * 0.354 * (
+                self.lineal_regression(self.calculated_values)[0][0]),
+                                               2)) + ' м²/г'
+
+            if self.lineal_regression(self.calculated_values)[0][1] > 0:
+                self.s_udel += '\nVmic = ' + str(round(
+                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                        1], 4))
+            else:
+                self.s_udel += '\nНедостаточно микропор'
         return super().render()
 
 
-class Hasley(Models):
+class Halsey(Models):
     def __init__(self, sample, x_axis_name, y_axis_name):
         super().__init__(sample, x_axis_name, y_axis_name)
-        self.title = 'Модель Хэсли'
+        self.title = 'Модель Хэлси'
 
     def _get_hasley_param(self, point):
         return round(0.354 * math.pow(-5 / math.log(point.p_p0), 1 / 3), 3)
@@ -312,9 +335,16 @@ class Hasley(Models):
         self.calculated_values = [y]
 
     def render(self):
-        self.s_udel = 'Sуд = ' + str(round(4.35375 * 0.354 * (
-            self.lineal_regression(self.calculated_values)[0][0]),
-                                           2)) + ' м²/г'
+        if self.lineal_regression(self.calculated_values):
+            self.s_udel = 'Sуд = ' + str(round(4.35375 * 0.354 * (
+                self.lineal_regression(self.calculated_values)[0][0]),
+                                               2)) + ' м²/г'
+            if self.lineal_regression(self.calculated_values)[0][1] > 0:
+                self.s_udel += '\nVmic = ' + str(round(
+                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                        1], 4))
+            else:
+                self.s_udel += '\nНедостаточно микропор'
         return super().render()
 
 
@@ -339,9 +369,16 @@ class HarkinsJura(Models):
         self.calculated_values = [y]
 
     def render(self):
-        self.s_udel = 'Sуд = ' + str(round(4.35375 * 0.354 * (
-            self.lineal_regression(self.calculated_values)[0][0]),
-                                           2)) + ' м²/г'
+        if self.lineal_regression(self.calculated_values):
+            self.s_udel = 'Sуд = ' + str(round(4.35375 * 0.354 * (
+                self.lineal_regression(self.calculated_values)[0][0]),
+                                               2)) + ' м²/г'
+            if self.lineal_regression(self.calculated_values)[0][1] > 0:
+                self.s_udel += '\nVmic = ' + str(round(
+                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                        1], 4))
+            else:
+                self.s_udel += '\nНедостаточно микропор'
         return super().render()
 
 
@@ -366,9 +403,16 @@ class TechnicalCarbon(Models):
         self.calculated_values = [y]
 
     def render(self):
-        self.s_udel = 'Sуд = ' + str(
-            round(1.547 * self.lineal_regression(self.calculated_values)[0][0],
-                  2)) + ' м²/г'
+        if self.lineal_regression(self.calculated_values):
+            self.s_udel = 'Sуд = ' + str(
+                round(1.547 * self.lineal_regression(self.calculated_values)[0][0],
+                      2)) + ' м²/г'
+            if self.lineal_regression(self.calculated_values)[0][1] > 0:
+                self.s_udel += '\nVmic = ' + str(round(
+                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                        1], 4))
+            else:
+                self.s_udel += '\nНедостаточно микропор'
         return super().render()
 
 
@@ -397,7 +441,14 @@ class BrookhoffDeBoer(Models):
         self.calculated_values = [y]
 
     def render(self):
-        self.s_udel = 'Sуд = ' + str(round(4.35375 * 0.354 * (
-            self.lineal_regression(self.calculated_values)[0][0]),
-                                           2)) + ' м²/г'
+        if self.lineal_regression(self.calculated_values):
+            self.s_udel = 'Sуд = ' + str(round(4.35375 * 0.354 * (
+                self.lineal_regression(self.calculated_values)[0][0]),
+                                               2)) + ' м²/г'
+            if self.lineal_regression(self.calculated_values)[0][1] > 0:
+                self.s_udel += '\nVmic = ' + str(round(
+                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                        1], 4))
+            else:
+                self.s_udel += '\nНедостаточно микропор'
         return super().render()

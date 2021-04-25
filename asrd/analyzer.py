@@ -3,7 +3,7 @@ from typing import List
 from asrd.database import db
 from asrd.database import MeasuringSet, Sample, SamplePoint
 from asrd.models import FullIsoterm, Bet, DeBoer, HarkinsJura, \
-    TechnicalCarbon, Hasley, BrookhoffDeBoer
+    TechnicalCarbon, Halsey, BrookhoffDeBoer
 
 
 class Analyzer:
@@ -75,7 +75,7 @@ class Analyzer:
             FullIsoterm(sample, x_axis_name='P/P₀', y_axis_name='V, мл/г'),
             Bet(sample, x_axis_name='h=P/P₀', y_axis_name='f=h/V(1-h)*10⁻³, г/мл'),
             DeBoer(sample, x_axis_name='t, нм', y_axis_name='V, мл/г'),
-            Hasley(sample, x_axis_name='t, нм', y_axis_name='V, мл/г'),
+            Halsey(sample, x_axis_name='t, нм', y_axis_name='V, мл/г'),
             HarkinsJura(sample, x_axis_name='t, нм', y_axis_name='V, мл/г'),
             TechnicalCarbon(sample, x_axis_name='t, нм', y_axis_name='V, мл/г'),
             BrookhoffDeBoer(sample, x_axis_name='t, нм', y_axis_name='V, мл/г'),

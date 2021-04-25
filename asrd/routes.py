@@ -43,7 +43,7 @@ def view(set_id):
 
     return render_template('index.html',
                            set_id=set_id,
-                           samples=enumerate(samples))
+                           samples=samples)
 
 
 @app.route('/view/<set_id>/<sample_id>/')
@@ -56,7 +56,7 @@ def view_with_graph(set_id, sample_id):
                            graph=True,
                            set_id=set_id,
                            sample_id=int(sample_id),
-                           samples=enumerate(samples))
+                           samples=samples)
 
 
 @app.route('/api/points/<set_id>/<sample_id>')

@@ -89,14 +89,14 @@
     <nav class="col-2 d-md-block bg-light sidebar">
       <div class="position-sticky pt-3">
         <h2 class="h6 sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-          Samples</h2>
+          Образцы</h2>
 
         <ul class="nav flex-column">
-          {% for index, sample in samples %}
-            <li class="nav-item">
-              <a class="nav-link {% if index == sample.id %}active{% endif %}"
-                 href="/view/{{set_id}}/{{sample.id}}">{{sample.sample_name}}</a>
-            </li>
+          {% for sample in samples %}
+          <li class="nav-item">
+            <a class="nav-link {% if sample_id == sample.id %}active{% endif %}"
+               href="/view/{{set_id}}/{{sample.id}}">{{sample.sample_name}}</a>
+          </li>
           {% endfor %}
         </ul>
 
@@ -144,7 +144,7 @@
           <p class="h4">Для загрузки файла:</p>
 
           <ol>
-            <li>нажмите <code>"Browse"</code> и выберете файл</li>
+            <li>нажмите <code>"Выберите файл"</code></li>
             <li>в открывшемся окне перейдите к необходимому файлу, выберите его
               и нажмите <code>"Открыть"</code>;
             </li>
@@ -156,6 +156,7 @@
         </div>
         {% endif %}
       </main>
+    </main>
   </div>
 </div>
 
@@ -166,11 +167,6 @@
     crossorigin="anonymous"
 ></script>
 
-<script
-    src='https://cdn.jsdelivr.net/npm/echarts-stat@1.2.0/dist/ecStat.min.js'
-    integrity='sha256-/xLj3SToEeldrxH0s+kpBkAD5sMwo2A8UtLmUppqV4s='
-    crossorigin="anonymous"
-></script>
 
 <script>
     function loadData() {
@@ -185,8 +181,6 @@
         wrapper.appendChild(container);
 
         const chart = window.echarts.init(container);
-
-        echarts.registerTransform(ecStat.transform.regression);
 
         chart.setOption(data);
     }
