@@ -18,7 +18,4 @@ git clone <% repo %> # download the latest version code
 poetry install # install the application dependencies
 ```
 
-On Ubuntu, you must install qt5 globally:
-```shell
-sudo apt install qt5-default
-```
+
