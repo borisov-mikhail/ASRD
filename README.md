@@ -9,7 +9,6 @@ The system testing in latest versions on Windows and Ubuntu.
 
 Dependencies:
 - [Python 3](https://www.python.org/)
-- [QT5](https://doc.qt.io/qt-5/index.html)
 - [PyEnv](https://github.com/pyenv/pyenv)
 - [Poetry](https://github.com/python-poetry/poetry)
 
