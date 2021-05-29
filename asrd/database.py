@@ -11,7 +11,7 @@ migrate = Migrate(app, db)
 
 class MeasuringSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(32))
+    filename = db.Column(db.String(64))
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     samples = db.relationship('Sample', backref='measuring_set', lazy='dynamic')
 

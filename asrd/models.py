@@ -22,9 +22,11 @@ class Models(ABC):
                       1) - 0.1,
                 round(max([value[0] for value in self.calculated_values[0]]),
                       1) + 0.1]
-            y_min_max_values = [0, round(
-                max([value[1] for value in self.calculated_values[0]]),
-                -1) + 10]
+            y_min_max_values = [
+                max(round(min([value[1] for value in self.calculated_values[0]]),
+                      -1) - 20, 0),
+                round(max([value[1] for value in self.calculated_values[0]]),
+                      -1) + 20]
             return [x_min_max_values, y_min_max_values]
         else:
             return [0, 1]
@@ -50,7 +52,8 @@ class Models(ABC):
             b = ((sum_x * sum_x_y) - (sum_x_2 * sum_y)) / (
                     (sum_x * sum_x) - (n * sum_x_2))
             if b >= 0:
-                equation = 'y = ' + str(round(a, 3)) + 'x + ' + str(round(b, 3))
+                equation = 'y = ' + str(round(a, 3)) + 'x + ' + str(
+                    round(b, 3))
             else:
                 equation = 'y = ' + str(round(a, 3)) + 'x - ' + str(
                     round(abs(b), 3))
@@ -221,19 +224,21 @@ class FullIsoterm(Models):
                 'legend': {
                     'bottom': 20,
                 },
-                'xAxis': {
+                'xAxis': [{
                     'name': self.x_axis_name,
-                    'type': 'value',
+                    'min': self.get_min_max_values()[0][0],
+                    'max': self.get_min_max_values()[0][1],
                     'nameTextStyle': {
                         'fontWeight': 'bolder',
                         'fontStyle': 'italic',
                         'fontSize': 16,
                     },
                     'splitNumber': 10,
-                },
+                }],
                 'yAxis': {
                     'name': self.y_axis_name,
-                    'type': 'value',
+                    'min': self.get_min_max_values()[1][0],
+                    'max': self.get_min_max_values()[1][1],
                     'nameTextStyle': {
                         'fontWeight': 'bolder',
                         'fontStyle': 'italic',
@@ -309,7 +314,8 @@ class DeBoer(Models):
 
             if self.lineal_regression(self.calculated_values)[0][1] > 0:
                 self.s_udel += '\nVmic = ' + str(round(
-                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                    0.0015468 *
+                    self.lineal_regression(self.calculated_values)[0][
                         1], 4))
             else:
                 self.s_udel += '\nНедостаточно микропор'
@@ -341,7 +347,8 @@ class Halsey(Models):
                                                2)) + ' м²/г'
             if self.lineal_regression(self.calculated_values)[0][1] > 0:
                 self.s_udel += '\nVmic = ' + str(round(
-                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                    0.0015468 *
+                    self.lineal_regression(self.calculated_values)[0][
                         1], 4))
             else:
                 self.s_udel += '\nНедостаточно микропор'
@@ -375,7 +382,8 @@ class HarkinsJura(Models):
                                                2)) + ' м²/г'
             if self.lineal_regression(self.calculated_values)[0][1] > 0:
                 self.s_udel += '\nVmic = ' + str(round(
-                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                    0.0015468 *
+                    self.lineal_regression(self.calculated_values)[0][
                         1], 4))
             else:
                 self.s_udel += '\nНедостаточно микропор'
@@ -405,11 +413,14 @@ class TechnicalCarbon(Models):
     def render(self):
         if self.lineal_regression(self.calculated_values):
             self.s_udel = 'Sуд = ' + str(
-                round(1.547 * self.lineal_regression(self.calculated_values)[0][0],
-                      2)) + ' м²/г'
+                round(
+                    1.547 * self.lineal_regression(self.calculated_values)[0][
+                        0],
+                    2)) + ' м²/г'
             if self.lineal_regression(self.calculated_values)[0][1] > 0:
                 self.s_udel += '\nVmic = ' + str(round(
-                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                    0.0015468 *
+                    self.lineal_regression(self.calculated_values)[0][
                         1], 4))
             else:
                 self.s_udel += '\nНедостаточно микропор'
@@ -447,7 +458,8 @@ class BrookhoffDeBoer(Models):
                                                2)) + ' м²/г'
             if self.lineal_regression(self.calculated_values)[0][1] > 0:
                 self.s_udel += '\nVmic = ' + str(round(
-                    0.0015468 * self.lineal_regression(self.calculated_values)[0][
+                    0.0015468 *
+                    self.lineal_regression(self.calculated_values)[0][
                         1], 4))
             else:
                 self.s_udel += '\nНедостаточно микропор'
