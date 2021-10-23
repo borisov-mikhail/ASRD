@@ -15,7 +15,6 @@ app.config[
 
 basic_auth = BasicAuth(app)
 
-# Because the Flask is fuck tool,
-# and can not init app without transitive dependencies
+
 import asrd.database
 import asrd.routes
